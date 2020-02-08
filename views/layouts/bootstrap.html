@@ -10,7 +10,9 @@
   </head>
   <body>
     <div class="container-fluid">
-      <!-- Our content will go here... somehow -->
+      <div class="container-fluid">
+        {{template "yield" .}}
+      </div>
     </div>
     <!-- jquery & Bootstrap JS -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
