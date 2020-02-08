@@ -13,24 +13,24 @@ var contactView *views.View
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	err := homeView.Template.ExecuteTemplate(w, homeView.Layout, nil)
-	if err != nil {
-		panic(err)
-	}
+	must(homeView.Render(w,nil))
 }
 
 func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	err := contactView.Template.ExecuteTemplate(w, contactView.Layout, nil)
+	must(contactView.Render(w,nil))
+}
+
+func must(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
 func main() {
-	homeView = views.NewView("bootstrap", 
+	homeView = views.NewView("bootstrap",
 		"views/home.html")
-	contactView = views.NewView("bootstrap", 
+	contactView = views.NewView("bootstrap",
 		"views/contact.html")
 
 	r := mux.NewRouter()
