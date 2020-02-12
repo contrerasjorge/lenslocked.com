@@ -32,7 +32,7 @@ func layoutFiles() []string {
 	return files
 }
 
-func (v *View) Render (w http.ResponseWriter,
+func (v *View) Render(w http.ResponseWriter,
 	data interface{}) error {
 	return v.Template.ExecuteTemplate(w, v.Layout, data)
 }
