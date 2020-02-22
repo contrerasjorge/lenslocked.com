@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	_ "github.com/lib/pq"
 	"lenslocked.com/models"
 )
@@ -21,17 +22,30 @@ func main() {
 		panic(err)
 	}
 	defer us.Close()
-	// us.DestructiveReset()
-	// user := models.User{
-	// 	Name:  "Jimmy Jim",
-	// 	Email: "abc@abc.io",
-	// }
-	// if err := us.Create(&user); err != nil {
+
+	us.DestructiveReset()
+
+	user := models.User{
+		Name:  "Jimmy Jim",
+		Email: "abc@abc.io",
+	}
+	if err := us.Create(&user); err != nil {
+		panic(err)
+	}
+
+	// user.Email = "abc@cde.io"
+	// if err := us.Update(&user); err != nil {
 	// 	panic(err)
 	// }
-	user, err := us.ByID(1)
+
+	// UserByEmail, err := us.ByEmail("abc@cde.io")
+
+	if err := us.Delete(user.ID); err != nil {
+		panic(err)
+	}
+	userByID, err := us.ByID(user.ID)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(user)
+	fmt.Println(userByID)
 }
