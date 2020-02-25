@@ -1,21 +1,43 @@
 package main
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 
-	"lenslocked.com/hash"
+	"lenslocked.com/models"
+)
+
+const (
+	host   = "localhost"
+	port   = 5432
+	user   = "contrerasjorge"
+	dbname = "lenslocked_dev"
 )
 
 func main() {
-	toHash := []byte("this is my string to hash")
-	h := hmac.New(sha256.New, []byte("my-secret-key"))
-	h.Write(toHash)
-	b := h.Sum(nil)
-	fmt.Println(base64.URLEncoding.EncodeToString(b))
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	us, err := models.NewUserService(psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer us.Close()
+	us.AutoMigrate()
 
-	hmac := hash.NewHMAC("my-secret-key")
-	fmt.Println(hmac.Hash("this is my string to hash"))
+	User := models.User{
+		Name:     "jei sea",
+		Email:    "jei@jei.com",
+		Password: "jei",
+		Remember: "abc123",
+	}
+	err = us.Create(&User)
+	if err != nil {
+		panic(err)
+
+	}
+
+	user2, err := us.ByRemember("abc123")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(user2)
 }
