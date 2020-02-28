@@ -14,8 +14,11 @@
     
     <div class="container-fluid">
       <div class="container-fluid">
-        {{template "yield" .}}
-
+        {{if .Alert}}
+          {{template "alert" .Alert}}
+        {{end}}
+        {{template "yield" .Yield}}
+        
         {{template "footer"}}
       </div>
     </div>
