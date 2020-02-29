@@ -19,14 +19,14 @@ func testingUserService() (*UserService, error) {
 	if err != nil {
 		return nil, err
 	}
-	us.db.LogMode(false)
+	// us.db.LogMode(false)
 	// Clear the user table between tests
 	us.DestructiveReset()
-	return us, nil
+	return &us, nil
 }
 
 func TestCreateUser(t *testing.T) {
-	us, err := testingUserService()
+	_, err := testingUserService()
 	if err != nil {
 		t.Fatal(err)
 	}
