@@ -131,13 +131,14 @@ func (uv *userValidator) Create(user *User) error {
 		uv.passwordMinLength,
 		uv.bcryptPassword,
 		uv.passwordHashRequired,
-		uv.setRememberIfUnsert,
+		uv.setRememberIfUnset,
 		uv.rememberMinBytes,
 		uv.hmacRemember,
 		uv.rememberHashRequired,
 		uv.normalizeEmail,
 		uv.requireEmail,
-		uv.emailFormat); err != nil {
+		uv.emailFormat,
+		uv.emailIsAvail); err != nil {
 		return err
 	}
 
@@ -166,7 +167,8 @@ func (uv *userValidator) Update(user *User) error {
 		uv.rememberHashRequired,
 		uv.normalizeEmail,
 		uv.requireEmail,
-		uv.emailFormat)
+		uv.emailFormat,
+		uv.emailIsAvail)
 	if err != nil {
 		return err
 	}
@@ -209,7 +211,7 @@ func (uv *userValidator) hmacRemember(user *User) error {
 	return nil
 }
 
-func (uv *userValidator) setRememberIfUnsert(user *User) error {
+func (uv *userValidator) setRememberIfUnset(user *User) error {
 	if user.Remember != "" {
 		return nil
 	}
@@ -225,7 +227,7 @@ func (uv *userValidator) rememberMinBytes(user *User) error {
 	if user.Remember == "" {
 		return nil
 	}
-	n, err := rand.NBytes(user.RememberHash)
+	n, err := rand.NBytes(user.Remember)
 	if err != nil {
 		return err
 	}
@@ -377,16 +379,14 @@ func (us *userService) Authenticate(email, password string) (*User, error) {
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(foundUser.PasswordHash), []byte(password+userPwPepper))
-	if err != nil {
-		switch err {
-		case bcrypt.ErrMismatchedHashAndPassword:
-			return nil, ErrPasswordIncorrect
-		default:
-			return nil, err
-		}
+	switch err {
+	case nil:
+		return foundUser, nil
+	case bcrypt.ErrMismatchedHashAndPassword:
+		return nil, ErrPasswordIncorrect
+	default:
+		return nil, err
 	}
-
-	return foundUser, nil
 }
 
 // Create will create the provided user and backfill data
