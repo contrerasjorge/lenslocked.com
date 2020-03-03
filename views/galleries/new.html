@@ -14,18 +14,17 @@
 {{end}} 
 
 {{define "galleryForm"}}
-<form actions="/galleries" method="POST">
+<form action="/galleries" method="POST">
   <div class="form-group">
     <label for="title">Title</label>
     <input
-      name="title"
       type="text"
+      name="title"
       class="form-control"
       id="title"
       placeholder="What is the title of your gallery?"
     />
   </div>
-
   <button type="submit" class="btn btn-primary">Create</button>
 </form>
 {{end}}
