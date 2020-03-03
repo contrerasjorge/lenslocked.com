@@ -21,3 +21,7 @@ type GalleryDB interface {
 type galleryGorm struct {
 	db *gorm.DB
 }
+
+func (gg *galleryGorm) Create(gallery *Gallery) error {
+	return nil
+}
