@@ -26,3 +26,5 @@
 
 # Add tmp folder
 tmp/
+
+images/**
