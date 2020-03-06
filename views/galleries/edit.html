@@ -104,7 +104,7 @@
 
 {{define "deleteImageForm"}}
   <form
-    action="/galleries/{{.GalleryID}}/images/{{.Filename}}/delete"
+    action="/galleries/{{.GalleryID}}/images/{{.Filename | urlquery}}/delete"
     method="POST"
   >
     {{csrfField}}
