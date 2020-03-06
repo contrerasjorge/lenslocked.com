@@ -51,6 +51,7 @@ func (g *Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	user := context.User(r.Context())
 	galleries, err := g.gs.ByUserID(user.ID)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		return
 	}
@@ -101,7 +102,6 @@ func (g *Galleries) Update(w http.ResponseWriter, r *http.Request) {
 	vd.Yield = gallery
 	var form GalleryForm
 	if err := parseForm(r, &form); err != nil {
-		log.Println(err)
 		vd.SetAlert(err)
 		g.EditView.Render(w, r, vd)
 		return
@@ -127,16 +127,11 @@ func (g *Galleries) Create(w http.ResponseWriter, r *http.Request) {
 	var vd views.Data
 	var form GalleryForm
 	if err := parseForm(r, &form); err != nil {
-		log.Println(err)
 		vd.SetAlert(err)
 		g.New.Render(w, r, vd)
 		return
 	}
 	user := context.User(r.Context())
-	if user == nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
 	gallery := models.Gallery{
 		Title:  form.Title,
 		UserID: user.ID,
@@ -148,7 +143,7 @@ func (g *Galleries) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	url, err := g.r.Get(EditGallery).URL("id", fmt.Sprintf("%v", gallery.ID))
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/galleries", http.StatusFound)
 		return
 	}
 	http.Redirect(w, r, url.Path, http.StatusFound)
@@ -193,6 +188,7 @@ func (g *Galleries) ImageUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	url, err := g.r.Get(EditGallery).URL("id", fmt.Sprintf("%v", gallery.ID))
 	if err != nil {
+		log.Println(err)
 		http.Redirect(w, r, "/galleries", http.StatusFound)
 		return
 	}
@@ -225,6 +221,7 @@ func (g *Galleries) ImageDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	url, err := g.r.Get(EditGallery).URL("id", fmt.Sprintf("%v", gallery.ID))
 	if err != nil {
+		log.Println(err)
 		http.Redirect(w, r, "/galleries", http.StatusFound)
 		return
 	}
@@ -258,6 +255,7 @@ func (g *Galleries) galleryByID(w http.ResponseWriter, r *http.Request) (*models
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, "Invalid gallery ID", http.StatusNotFound)
 		return nil, err
 	}
@@ -267,6 +265,7 @@ func (g *Galleries) galleryByID(w http.ResponseWriter, r *http.Request) (*models
 		case models.ErrNotFound:
 			http.Error(w, "Gallery not found", http.StatusNotFound)
 		default:
+			log.Println(err)
 			http.Error(w, "Whoops! Something went wrong.", http.StatusInternalServerError)
 		}
 		return nil, err
