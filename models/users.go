@@ -8,12 +8,11 @@ import (
 	"lenslocked.com/rand"
 
 	"github.com/jinzhu/gorm"
-	// Using gorm's postgres dialect
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
+// TODO: Config this
 const userPwPepper = "super-awesome-string"
 const hmacSecretKey = "secret-hmac-key"
 
