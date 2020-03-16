@@ -30,3 +30,5 @@ tmp/
 images/**
 
 scripts/**
+
+.config
