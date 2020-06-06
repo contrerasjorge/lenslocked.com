@@ -64,6 +64,7 @@ type UserService interface {
 	// by creating a reset token for the user found with the
 	// provided email address
 	InitiateReset(email string) (string, error)
+	CompleteReset(token, newPw string) (*User, error)
 	//CompleteReset(...) (...)
 	UserDB
 }
