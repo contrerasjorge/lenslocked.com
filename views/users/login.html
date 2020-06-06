@@ -8,14 +8,17 @@
       <div class="panel-body">
         {{template "loginForm"}}
       </div>
+      <div class="panel-footer">
+        <a href="/forgot">Forgot your password?</a>
+      </div>
     </div>
   </div>
 </div>
-{{end}} 
+{{ end }}
 
 {{define "loginForm"}}
 <form actions="/login" method="POST">
-  {{csrfField}}
+  {{ csrfField }}
   <div class="form-group">
     <label for="email">Email address</label>
     <input
@@ -39,4 +42,4 @@
 
   <button type="submit" class="btn btn-primary">Login</button>
 </form>
-{{end}}
+{{ end }}
