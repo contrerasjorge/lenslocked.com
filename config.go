@@ -43,6 +43,13 @@ type MailgunConfig struct {
 	Domain       string `json:"domain"`
 }
 
+type OAuthConfig struct {
+	ID       string `json:"id"`
+	Secret   string `json:"secret"`
+	AuthURL  string `json:"auth_url"`
+	TokenURL string `json:"token_url"`
+}
+
 type Config struct {
 	Port     int            `json:"port"`
 	Env      string         `json:"env"`
@@ -50,6 +57,7 @@ type Config struct {
 	HMACKey  string         `json:"hmac_key"`
 	Database PostgresConfig `json:"database"`
 	Mailgun  MailgunConfig  `json:"mailgun"`
+	Dropbox  OAuthConfig    `json:"dropbox"`
 }
 
 func (c Config) IsProd() bool {
