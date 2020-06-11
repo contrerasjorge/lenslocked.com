@@ -47,7 +47,8 @@ const (
 	// without a user remember token hash
 	ErrRememberRequired privateError = "models: remember token is required"
 
-	ErrUserIDRequired privateError = "models: user ID is required"
+	ErrUserIDRequired  privateError = "models: user ID is required"
+	ErrServiceRequired privateError = "models: service is required"
 )
 
 type modelError string

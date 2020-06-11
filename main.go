@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
+	llctx "lenslocked.com/context"
 	"lenslocked.com/controllers"
 	"lenslocked.com/email"
 	"lenslocked.com/middleware"
@@ -31,7 +32,9 @@ func main() {
 		models.WithUser(cfg.Pepper, cfg.HMACKey),
 		models.WithGallery(),
 		models.WithImage(),
+		models.WithOAuth(),
 	)
+
 	must(err)
 	defer services.Close()
 	// services.DestructiveReset()
@@ -81,7 +84,7 @@ func main() {
 		url := dbxOAuth.AuthCodeURL(state)
 		http.Redirect(w, r, url, http.StatusFound)
 	}
-	r.HandleFunc("/oauth/dropbox/connect", dbxRedirect)
+	r.HandleFunc("/oauth/dropbox/connect", requireUserMw.ApplyFn(dbxRedirect))
 	dbxCallback := func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		state := r.FormValue("state")
@@ -103,9 +106,30 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		user := llctx.User(r.Context())
+		existing, err := services.OAuth.Find(user.ID, models.OAuthDropbox)
+		if err == models.ErrNotFound {
+			// noop
+		} else if err != nil {
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		} else {
+			services.OAuth.Delete(existing.ID)
+		}
+		userOAuth := models.OAuth{
+			UserID:  user.ID,
+			Token:   *token,
+			Service: models.OAuthDropbox,
+		}
+		err = services.OAuth.Create(&userOAuth)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		fmt.Fprint(w, "%+v", token)
 	}
-	r.HandleFunc("/oauth/dropbox/callback", dbxCallback)
+	r.HandleFunc("/oauth/dropbox/callback", requireUserMw.ApplyFn(dbxCallback))
 
 	r.Handle("/", staticC.Home).Methods("GET")
 	r.Handle("/contact", staticC.Contact).Methods("GET")
