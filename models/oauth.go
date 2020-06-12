@@ -5,10 +5,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	OAuthDropbox = "dropbox"
-)
-
 type OAuth struct {
 	gorm.Model
 	UserID  uint   `gorm:"not null;unique_index:user_id_service"`
